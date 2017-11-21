@@ -7,5 +7,5 @@ import android.support.annotation.NonNull;
  */
 
 public interface Where {
-    @NonNull public String toStatement();
+    @NonNull public String toStatement(@NonNull String tableName);
 }

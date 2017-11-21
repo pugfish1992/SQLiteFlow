@@ -25,13 +25,34 @@ public class Condition implements Where {
     public static final int LESS_THAN = 4;
     public static final int LESS_THAN_OR_EQUALS = 5;
 
-    @NonNull private final String mStatement;
+    @NonNull private String mColumn;
+    @Operator private int mOperator;
+    @Nullable private Object mValue;
 
     public Condition(@NonNull String column, @Operator int operator, @Nullable Object value) {
-        StringBuilder statement = new StringBuilder(column);
+        mColumn = column;
+        mOperator = operator;
+        mValue = value;
+    }
 
-        if (value != null) {
-            switch (operator) {
+    public void setColumn(@NonNull String column) {
+        mColumn = column;
+    }
+
+    public void setOperator(@Operator int operator) {
+        mOperator = operator;
+    }
+
+    public void setValue(@Nullable Object value) {
+        mValue = value;
+    }
+
+    @NonNull
+    @Override
+    public String toStatement(@NonNull String tableName) {
+        StringBuilder statement = new StringBuilder(tableName).append(".").append(mColumn);
+        if (mValue != null) {
+            switch (mOperator) {
                 case EQUALS: statement.append(" = "); break;
                 case NOT_EQUALS: statement.append(" != "); break;
                 case GREATER_THAN: statement.append(" > "); break;
@@ -40,24 +61,18 @@ public class Condition implements Where {
                 case LESS_THAN_OR_EQUALS: statement.append(" <= "); break;
                 default: throw new IllegalArgumentException("invalid operator");
             }
-            statement.append(SqliteFormat.toLiteral(value));
+            statement.append(SqliteFormat.toLiteral(mValue));
 
         } else {
-            if (operator == EQUALS) {
+            if (mOperator == EQUALS) {
                 statement.append(" is null");
-            } else if (operator == NOT_EQUALS) {
+            } else if (mOperator == NOT_EQUALS) {
                 statement.append(" is not null");
             } else {
                 throw new IllegalArgumentException("invalid operator");
             }
         }
 
-        mStatement = statement.toString();
-    }
-
-    @NonNull
-    @Override
-    public String toStatement() {
-        return mStatement;
+        return statement.toString();
     }
 }

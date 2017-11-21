@@ -51,7 +51,7 @@ public class Select<T extends Entry> {
                 mTarget,
                 mDistinct,
                 mTable,
-                mWhere != null ? mWhere.toStatement() : null,
+                mWhere != null ? mWhere.toStatement(mTable) : null,
                 null,
                 null,
                 null,
