@@ -18,6 +18,7 @@ import com.pugfish1992.sqliteflow.annotation.Validator;
 import com.pugfish1992.sqliteflow.core.AbsValidator;
 import com.pugfish1992.sqliteflow.core.AffinityType;
 import com.pugfish1992.sqliteflow.core.Entry;
+import com.pugfish1992.sqliteflow.utils.SqliteFormat;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.FieldSpec;
@@ -67,6 +68,7 @@ public class SQLiteFlowProcessor extends AbstractProcessor {
     private static final ClassName CLASS_CONTENT_VALUES = ClassName.get(ContentValues.class);
     private static final ClassName CLASS_ABS_VALIDATOR = ClassName.get(AbsValidator.class);
     private static final ClassName CLASS_ENTRY = ClassName.get(Entry.class);
+    private static final ClassName CLASS_SQLITE_FORMAT = ClassName.get(SqliteFormat.class);
 
     private Filer mFiler;
     private Messager mMessager;
@@ -433,7 +435,11 @@ public class SQLiteFlowProcessor extends AbstractProcessor {
                 .returns(CLASS_CONTENT_VALUES)
                 .addStatement("$T v = new $T()", CLASS_CONTENT_VALUES, CLASS_CONTENT_VALUES);
         for (AnnotatedColumnField field : annotatedColumnFields) {
-            method.addStatement("v.put($S, $L)", field.columnName, field.variableName);
+            if (isBooleanType(field.variableType)) {
+                method.addStatement("v.put($S, $T.toInt($L))", field.columnName, CLASS_SQLITE_FORMAT, field.variableName);
+            } else {
+                method.addStatement("v.put($S, $L)", field.columnName, field.variableName);
+            }
         }
         method.addStatement("return v");
         entryClassSpec.addMethod(method.build());
@@ -445,16 +451,20 @@ public class SQLiteFlowProcessor extends AbstractProcessor {
                 .addParameter(ParameterSpec.builder(CLASS_CONTENT_VALUES, "v").addAnnotation(NonNull.class).build());
         for (AnnotatedColumnField field : annotatedColumnFields) {
             String methodNameToGetVal = null;
-            if (isBooleanType(field.variableType)) methodNameToGetVal = "getAsBoolean";
-            else if (isShortType(field.variableType)) methodNameToGetVal = "getAsShort";
-            else if (isIntType(field.variableType)) methodNameToGetVal = "getAsInteger";
-            else if (isLongType(field.variableType)) methodNameToGetVal = "getAsLong";
-            else if (isFloatType(field.variableType)) methodNameToGetVal = "getAsFloat";
-            else if (isDoubleType(field.variableType)) methodNameToGetVal = "getAsDouble";
-            else if (isStringType(field.variableType)) methodNameToGetVal = "getAsString";
+            if (isBooleanType(field.variableType)) {
+                method.addStatement("$L = $T.toBool(v.getAsInteger($S))", field.variableName, CLASS_SQLITE_FORMAT, field.columnName);
 
-            if (methodNameToGetVal != null) {
-                method.addStatement("$L = v.$L($S)", field.variableName, methodNameToGetVal, field.columnName);
+            } else {
+                if (isShortType(field.variableType)) methodNameToGetVal = "getAsShort";
+                else if (isIntType(field.variableType)) methodNameToGetVal = "getAsInteger";
+                else if (isLongType(field.variableType)) methodNameToGetVal = "getAsLong";
+                else if (isFloatType(field.variableType)) methodNameToGetVal = "getAsFloat";
+                else if (isDoubleType(field.variableType)) methodNameToGetVal = "getAsDouble";
+                else if (isStringType(field.variableType)) methodNameToGetVal = "getAsString";
+
+                if (methodNameToGetVal != null) {
+                    method.addStatement("$L = v.$L($S)", field.variableName, methodNameToGetVal, field.columnName);
+                }
             }
         }
         entryClassSpec.addMethod(method.build());

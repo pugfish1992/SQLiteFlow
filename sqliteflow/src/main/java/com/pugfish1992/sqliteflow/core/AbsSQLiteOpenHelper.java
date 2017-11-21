@@ -5,6 +5,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.text.TextUtils;
 
+import com.pugfish1992.sqliteflow.core.Column;
+import com.pugfish1992.sqliteflow.core.Table;
+
 import java.util.Set;
 
 /**

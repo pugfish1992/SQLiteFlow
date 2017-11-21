@@ -46,6 +46,7 @@ final class Storage {
         int i = 0;
         for (Column column : columnSet) {
             columns[i] = column.name;
+            ++i;
         }
 
         SQLiteDatabase db = mOpenHelper.getReadableDatabase();

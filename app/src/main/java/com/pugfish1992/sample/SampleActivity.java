@@ -14,10 +14,12 @@ import android.view.MenuItem;
 
 import com.pugfish1992.sqliteflow.component.Condition;
 import com.pugfish1992.sqliteflow.component.Expression;
+import com.pugfish1992.sqliteflow.core.Select;
 import com.pugfish1992.sqliteflow.core.User;
 import com.pugfish1992.sqliteflow.core.UserTable;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class SampleActivity extends AppCompatActivity {
@@ -38,12 +40,32 @@ public class SampleActivity extends AppCompatActivity {
             }
         });
 
-        Expression expression = Expression
-                .first(UserTable.id.greaterThanOrEqualsTo(20))
-                .and(UserTable.hasBrothers.equalsTo(true))
-                .or(UserTable.age.lessThan(30));
+        User user = new User();
+        user.name = "oraoraora";
+        user.age = 32;
+        user.hasBrothers = false;
+        user.save();
 
-        Log.d("mylog", expression.toStatement());
+        user = new User();
+        user.name = "dorararara";
+        user.age = 18;
+        user.hasBrothers = false;
+        user.save();
+
+        user = new User();
+        user.name = "wryyyyyyyyyyyy";
+        user.age = 120;
+        user.hasBrothers = true;
+        user.save();
+
+        List<User> users = Select
+                .target(User.class)
+                .from(UserTable.class)
+                .start();
+
+        for (User u : users) {
+            Log.d("mylog", "selected -> " + u.name + " hasBrothers=" + String.valueOf(u.hasBrothers));
+        }
     }
 
     @Override
