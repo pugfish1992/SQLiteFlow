@@ -9,7 +9,7 @@ import com.pugfish1992.sqliteflow.component.Condition;
  * Created by daichi on 11/20/17.
  */
 
-public final class Column {
+public class Column {
 
     @NonNull public final String name;
     @NonNull public final AffinityType type;

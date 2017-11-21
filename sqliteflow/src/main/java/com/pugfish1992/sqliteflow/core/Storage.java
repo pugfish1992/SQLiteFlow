@@ -16,7 +16,7 @@ import java.util.Set;
  */
 
 /* Intentional package-private visibility */
-final class Storage {
+class Storage {
 
     private static Storage INSTANCE = null;
     private final SQLiteOpenHelper mOpenHelper;

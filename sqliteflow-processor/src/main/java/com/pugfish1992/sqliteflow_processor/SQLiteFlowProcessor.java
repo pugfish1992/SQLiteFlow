@@ -453,7 +453,6 @@ public class SQLiteFlowProcessor extends AbstractProcessor {
             String methodNameToGetVal = null;
             if (isBooleanType(field.variableType)) {
                 method.addStatement("$L = $T.toBool(v.getAsInteger($S))", field.variableName, CLASS_SQLITE_FORMAT, field.columnName);
-
             } else {
                 if (isShortType(field.variableType)) methodNameToGetVal = "getAsShort";
                 else if (isIntType(field.variableType)) methodNameToGetVal = "getAsInteger";

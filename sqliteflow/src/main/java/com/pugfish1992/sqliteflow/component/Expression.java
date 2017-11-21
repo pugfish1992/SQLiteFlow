@@ -6,7 +6,7 @@ import android.support.annotation.NonNull;
  * Created by daichi on 11/22/17.
  */
 
-public final class Expression implements Where {
+public class Expression implements Where {
 
     private StringBuilder mStatement;
 

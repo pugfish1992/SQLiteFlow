@@ -13,7 +13,7 @@ import java.lang.annotation.RetentionPolicy;
  * Created by daichi on 11/22/17.
  */
 
-public final class Condition implements Where {
+public class Condition implements Where {
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({EQUALS, NOT_EQUALS, GREATER_THAN, GREATER_THAN_OR_EQUALS, LESS_THAN, LESS_THAN_OR_EQUALS})

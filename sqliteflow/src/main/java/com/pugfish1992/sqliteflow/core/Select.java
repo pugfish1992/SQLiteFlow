@@ -11,7 +11,7 @@ import java.util.List;
  * Created by daichi on 11/22/17.
  */
 
-public final class Select<T extends Entry> {
+public class Select<T extends Entry> {
 
     @NonNull private Class<T> mTarget;
     private boolean mDistinct;
