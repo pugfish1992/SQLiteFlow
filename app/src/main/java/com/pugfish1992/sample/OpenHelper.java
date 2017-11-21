@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.pugfish1992.sqliteflow.core.AbsSQLiteOpenHelper;
+import com.pugfish1992.sqliteflow.core.FamilyTable;
 import com.pugfish1992.sqliteflow.core.UserTable;
 
 /**
@@ -22,5 +23,6 @@ public class OpenHelper extends AbsSQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         super.createTable(UserTable.class, db, true);
+        super.createTable(FamilyTable.class, db, true);
     }
 }

@@ -9,8 +9,7 @@ import android.support.annotation.NonNull;
 
 abstract public class Entry {
 
-    /* Intentional package-private visibility */
-    static <T extends Entry> T newInstanceOf(@NonNull Class<T> entryClass) {
+    public static <T extends Entry> T newInstanceOf(@NonNull Class<T> entryClass) {
         try {
             return entryClass.newInstance();
         } catch (Exception e) {

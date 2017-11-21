@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.pugfish1992.sqliteflow.component.Expressions;
+import com.pugfish1992.sqliteflow.core.FamilyTable;
 import com.pugfish1992.sqliteflow.core.Select;
 import com.pugfish1992.sqliteflow.core.User;
 import com.pugfish1992.sqliteflow.core.UserTable;

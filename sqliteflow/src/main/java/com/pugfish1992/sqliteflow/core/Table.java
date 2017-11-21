@@ -38,8 +38,7 @@ abstract public class Table {
 
     */
 
-    /* Intentional package-private visibility */
-    static <T extends Table> T newInstanceOf(@NonNull Class<T> tableClass) {
+    public static <T extends Table> T newInstanceOf(@NonNull Class<T> tableClass) {
         try {
             return tableClass.newInstance();
         } catch (Exception e) {

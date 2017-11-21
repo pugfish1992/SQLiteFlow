@@ -47,6 +47,9 @@ public class Select<T extends Entry> {
 
     @NonNull
     public List<T> start() {
+        if (mTable == null) {
+            throw new IllegalStateException("specify a target table");
+        }
         return Storage.api().selectItems(
                 mTarget,
                 mDistinct,
