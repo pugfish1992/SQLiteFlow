@@ -12,6 +12,8 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.pugfish1992.sqliteflow.component.Condition;
+import com.pugfish1992.sqliteflow.component.Expression;
 import com.pugfish1992.sqliteflow.core.User;
 import com.pugfish1992.sqliteflow.core.UserTable;
 
@@ -36,19 +38,12 @@ public class SampleActivity extends AppCompatActivity {
             }
         });
 
-        User user = new User();
-        user.name = "fffff";
-        if (user.save()) {
-            Log.d("mylog", "save");
-        } else {
-            Log.d("mylog", "oh my ga!");
-        }
+        Expression expression = Expression
+                .first(UserTable.id.greaterThanOrEqualsTo(20))
+                .and(UserTable.hasBrothers.equalsTo(true))
+                .or(UserTable.age.lessThan(30));
 
-        if (user.delete()) {
-            Log.d("mylog", "delete");
-        } else {
-            Log.d("mylog", "oh my ga delete!");
-        }
+        Log.d("mylog", expression.toStatement());
     }
 
     @Override
