@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/SQLiteFlow.iml" filepath="$PROJECT_DIR$/SQLiteFlow.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sqliteflow/sqliteflow.iml" filepath="$PROJECT_DIR$/sqliteflow/sqliteflow.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sqliteflow-processor/sqliteflow-processor.iml" filepath="$PROJECT_DIR$/sqliteflow-processor/sqliteflow-processor.iml" />
+    </modules>
+  </component>
+</project>
