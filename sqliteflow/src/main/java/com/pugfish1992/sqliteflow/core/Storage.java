@@ -6,6 +6,7 @@ import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -93,7 +94,7 @@ class Storage {
         }
 
         // 2. attempt to insert
-        validatedValues.remove(table.getPrimaryKeyColumn().name);
+        validatedValues.remove(table.getPrimaryKeyColumn().simpleName);
         long newId = db.insert(table.getName(), null, validatedValues);
         db.close();
         if (newId == -1) {

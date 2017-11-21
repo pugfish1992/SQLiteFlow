@@ -10,7 +10,8 @@ public enum AffinityType {
     REAL,
     BLOB;
 
-    public String toStatement() {
+    @Override
+    public String toString() {
         return this.name();
     }
 }

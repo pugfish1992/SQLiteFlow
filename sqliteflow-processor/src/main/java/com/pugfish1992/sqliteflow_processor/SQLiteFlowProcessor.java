@@ -59,7 +59,6 @@ public class SQLiteFlowProcessor extends AbstractProcessor {
 
     private static final ClassName CLASS_STRING = ClassName.get(String.class);
     private static final ClassName CLASS_COLUMN = ClassName.get(com.pugfish1992.sqliteflow.core.Column.class);
-    private static final ClassName CLASS_COLUMN_BUILDER = ClassName.get(com.pugfish1992.sqliteflow.core.Column.Builder.class);
     private static final ClassName CLASS_AFFINITY_TYPE = ClassName.get(AffinityType.class);
     private static final ClassName CLASS_SET = ClassName.get(Set.class);
     private static final ClassName CLASS_ARRAYS = ClassName.get(Arrays.class);
@@ -282,8 +281,6 @@ public class SQLiteFlowProcessor extends AbstractProcessor {
                 .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
                 .superclass(CLASS_TABLE);
 
-        Map<String, String> varNamesWithConstColumnVarName = new HashMap<>();
-
         // a static constant instance of AbsValidator class
         final String varName_VALIDATOR = "VALIDATOR";
         FieldSpec.Builder fieldSpec = FieldSpec
@@ -299,26 +296,14 @@ public class SQLiteFlowProcessor extends AbstractProcessor {
 
         // static constant Column variables
         for (AnnotatedColumnField field : annotatedColumnFields) {
-            String constColumnVarName = field.columnName.toUpperCase();
-            varNamesWithConstColumnVarName.put(field.variableName, constColumnVarName);
+            AffinityType affinityType = toAffinityTypeFromSupportedJavaType(field.variableType);
             FieldSpec.Builder constColumnSpec = FieldSpec
                     .builder(CLASS_COLUMN, field.variableName)
-                    .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL);
+                    .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
+                    .initializer("new $T($S, $S, $T.$L, $L)", CLASS_COLUMN, field.columnName, tableName,
+                            CLASS_AFFINITY_TYPE, affinityType.name(), String.valueOf(field.isPrimaryKey));
             tableClassSpec.addField(constColumnSpec.build());
         }
-
-        // static initializer; initialize static constant Column variables
-        CodeBlock.Builder staticBlock = CodeBlock.builder();
-        for (AnnotatedColumnField field : annotatedColumnFields) {
-            AffinityType affinityType = toAffinityTypeFromSupportedJavaType(field.variableType);
-            staticBlock
-                    .add("$L = $T\n", field.variableName, CLASS_COLUMN_BUILDER)
-                    .add(".name($S)\n", field.columnName)
-                    .add(".type($T.$L)\n", CLASS_AFFINITY_TYPE, affinityType.name())
-                    .add(".primaryKey($L)\n", String.valueOf(field.isPrimaryKey))
-                    .add(".build();\n");
-        }
-        tableClassSpec.addStaticBlock(staticBlock.build());
 
         // override method; getName()
         tableClassSpec.addMethod(MethodSpec
@@ -331,14 +316,17 @@ public class SQLiteFlowProcessor extends AbstractProcessor {
                 .build());
 
         // override method; getColumnSet()
+        List<String> varNames = new ArrayList<>(annotatedColumnFields.size());
+        for (AnnotatedColumnField field : annotatedColumnFields) {
+            varNames.add(field.variableName);
+        }
         tableClassSpec.addMethod(MethodSpec
                 .methodBuilder("getColumnSet")
                 .addAnnotation(Override.class)
                 .addAnnotation(NonNull.class)
                 .addModifiers(Modifier.PUBLIC)
                 .returns(ParameterizedTypeName.get(CLASS_SET, CLASS_COLUMN))
-                .addStatement("return new $T<>($T.asList($L))", CLASS_HASH_SET, CLASS_ARRAYS,
-                        joinTokens(",", varNamesWithConstColumnVarName.keySet()))
+                .addStatement("return new $T<>($T.asList($L))", CLASS_HASH_SET, CLASS_ARRAYS, joinTokens(",", varNames))
                 .build());
 
         // override method; getValidator()
@@ -493,10 +481,10 @@ public class SQLiteFlowProcessor extends AbstractProcessor {
         JavaFile.builder(packageName, entryClassSpec.build()).build().writeTo(mFiler);
     }
 
-        /**
-         * Convert a snake-case or a camel-case to a pascal-case(upper-camel-case).
-         * @param name Expect a snake-case or a camel-case.
-         */
+    /**
+     * Convert a snake-case or a camel-case to a pascal-case(upper-camel-case).
+     * @param name Expect a snake-case or a camel-case.
+     */
     @NonNull private String toPascalCase(@NonNull String name) {
         StringBuilder pascal = new StringBuilder();
         for (int i = 0; i < name.length(); ++i) {

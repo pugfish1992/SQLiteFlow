@@ -40,23 +40,30 @@ public class SampleActivity extends AppCompatActivity {
         user.name = "oraoraora";
         user.age = 32;
         user.hasBrothers = false;
-        user.save();
+        if (!user.save()) {
+            Log.d("mylog", "failed to save...");
+        }
 
         user = new User();
         user.name = "dorararara";
         user.age = 18;
         user.hasBrothers = false;
-        user.save();
+        if (!user.save()) {
+            Log.d("mylog", "failed to save...");
+        }
 
         user = new User();
         user.name = "wryyyyyyyyyyyy";
         user.age = 120;
         user.hasBrothers = true;
-        user.save();
+        if (!user.save()) {
+            Log.d("mylog", "failed to save...");
+        }
 
         List<User> users = Select
                 .target(User.class)
                 .from(UserTable.class)
+                .where(UserTable.hasBrothers.equalsTo(true))
                 .start();
 
         for (User u : users) {

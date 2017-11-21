@@ -34,7 +34,7 @@ abstract public class AbsSQLiteOpenHelper extends SQLiteOpenHelper {
         String[] subStatements = new String[columnSet.size()];
         int i = 0;
         for (Column column : columnSet) {
-            String subStatement = column.name + " " + column.type.toStatement();
+            String subStatement = column.simpleName + " " + column.type.toString();
             if (column.isPrimaryKey) {
                 subStatement += " primary key";
             }

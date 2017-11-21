@@ -2,37 +2,39 @@ package com.pugfish1992.sqliteflow.component;
 
 import android.support.annotation.NonNull;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Created by daichi on 11/22/17.
  */
 
 public class Expressions implements Where {
 
-    private static final String SPACE = " ";
-    private static final String AND = "AND";
-    private static final String OR = "OR";
-
-    private final List<Where> mExprs;
-    private final List<String> mOperators;
+    private final StringBuilder mStatement;
 
     public Expressions(@NonNull Where firstExpression) {
-        mExprs = new ArrayList<>();
-        mOperators = new ArrayList<>();
-        mExprs.add(firstExpression);
+        mStatement = new StringBuilder(firstExpression.toString());
+    }
+
+    public Expressions(@NonNull Expressions firstExpression) {
+        mStatement = new StringBuilder(addParenthesesAround(firstExpression.toString()));
     }
 
     public Expressions and(@NonNull Where expression) {
-        mExprs.add(expression);
-        mOperators.add(AND);
+        mStatement.append(" AND ").append(expression.toString());
+        return this;
+    }
+
+    public Expressions and(@NonNull Expressions expression) {
+        mStatement.append(" AND ").append(addParenthesesAround(expression.toString()));
         return this;
     }
 
     public Expressions or(@NonNull Where expression) {
-        mExprs.add(expression);
-        mOperators.add(OR);
+        mStatement.append(" OR ").append(expression.toString());
+        return this;
+    }
+
+    public Expressions or(@NonNull Expressions expression) {
+        mStatement.append(" OR ").append(addParenthesesAround(expression.toString()));
         return this;
     }
 
@@ -40,24 +42,8 @@ public class Expressions implements Where {
         return "(" + text + ")";
     }
 
-    private String expressionToStatement(Where expression, String tableName) {
-        if (expression instanceof Expressions) {
-            return addParenthesesAround(expression.toStatement(tableName));
-        } else {
-            return expression.toStatement(tableName);
-        }
-    }
-
-    @NonNull
     @Override
-    public String toStatement(@NonNull String tableName) {
-        StringBuilder statement = new StringBuilder(expressionToStatement(mExprs.get(0), tableName));
-        for (int i = 0; i < mOperators.size(); ++i) {
-            statement.append(SPACE)
-                    .append(mOperators.get(i))
-                    .append(SPACE)
-                    .append(expressionToStatement(mExprs.get(i + 1), tableName));
-        }
-        return statement.toString();
+    public String toString() {
+        return mStatement.toString();
     }
 }
