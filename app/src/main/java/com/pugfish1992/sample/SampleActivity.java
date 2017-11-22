@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.pugfish1992.sqliteflow.component.Expressions;
+import com.pugfish1992.sqliteflow.component.Join;
 import com.pugfish1992.sqliteflow.core.FamilyTable;
 import com.pugfish1992.sqliteflow.core.Select;
 import com.pugfish1992.sqliteflow.core.User;
@@ -69,6 +70,9 @@ public class SampleActivity extends AppCompatActivity {
         for (User u : users) {
             Log.d("mylog", "selected -> " + u.name + " hasBrothers=" + String.valueOf(u.hasBrothers));
         }
+
+        Join join = new Join("left", Join.Type.INNER_JOIN, "right").on(UserTable.id.equalsTo(FamilyTable.id));
+        Log.d("mylog", "join -> " + join.toString());
     }
 
     @Override
