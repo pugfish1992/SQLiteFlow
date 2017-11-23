@@ -37,7 +37,6 @@ public class DinosaurEditorDialog extends DialogFragment {
     }
 
     private static final String ARG_DINOSAUR_ID = "DinosaurEditorDialog:id";
-    private static final String ARG_DINOSAUR_NAME = "DinosaurEditorDialog:name";
 
     private OnSaveSuccessfulListener mListener;
     private Dinosaur mDinosaur = null;
@@ -48,7 +47,6 @@ public class DinosaurEditorDialog extends DialogFragment {
         if (dinosaur != null) {
             Bundle args = new Bundle();
             args.putLong(ARG_DINOSAUR_ID, dinosaur.getId());
-            args.putString(ARG_DINOSAUR_NAME, dinosaur.getName());
             fragment.setArguments(args);
         }
         return fragment;
@@ -59,9 +57,6 @@ public class DinosaurEditorDialog extends DialogFragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mDinosaur = Dinosaur.findById(getArguments().getLong(ARG_DINOSAUR_ID));
-            if (mDinosaur != null) {
-                mDinosaur.setName(getArguments().getString(ARG_DINOSAUR_NAME, null));
-            }
         }
 
         if (mDinosaur == null) {
