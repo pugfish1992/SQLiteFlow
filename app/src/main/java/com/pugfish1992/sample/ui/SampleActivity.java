@@ -14,6 +14,8 @@ import android.view.MenuItem;
 
 import com.pugfish1992.sample.R;
 import com.pugfish1992.sample.data.Dinosaur;
+import com.pugfish1992.sample.data.Period;
+import com.pugfish1992.sqliteflow.core.DinosaurBase;
 
 public class SampleActivity extends AppCompatActivity implements DinosaurEditorDialog.OnSaveSuccessfulListener {
 
