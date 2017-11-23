@@ -28,6 +28,10 @@ abstract public class AbsSQLiteOpenHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
     }
 
+    public final void createTable(Class<? extends Table> tableClass, SQLiteDatabase db) {
+        createTable(tableClass, db, true);
+    }
+
     public final void createTable(Class<? extends Table> tableClass, SQLiteDatabase db, boolean cancelIfExist) {
         Table table = Table.newInstanceOf(tableClass);
         Set<Column> columnSet = table.getColumnSet();

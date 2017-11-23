@@ -1,7 +1,5 @@
 package com.pugfish1992.sample;
 
-import android.content.ContentValues;
-import android.support.annotation.NonNull;
 
 import com.pugfish1992.sqliteflow.annotation.*;
 import com.pugfish1992.sqliteflow.core.AbsValidator;

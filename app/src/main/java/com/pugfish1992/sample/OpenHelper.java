@@ -22,7 +22,7 @@ public class OpenHelper extends AbsSQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        super.createTable(UserTable.class, db, true);
-        super.createTable(FamilyTable.class, db, true);
+        super.createTable(UserTable.class, db);
+        super.createTable(FamilyTable.class, db);
     }
 }
