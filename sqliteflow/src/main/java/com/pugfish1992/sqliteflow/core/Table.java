@@ -4,8 +4,7 @@ import android.content.ContentValues;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.pugfish1992.sqliteflow.component.Join;
-import com.pugfish1992.sqliteflow.utils.ValidationErrorListener;
+import com.pugfish1992.sqliteflow.component.Joinable;
 
 import java.util.Set;
 
@@ -13,7 +12,7 @@ import java.util.Set;
  * Created by daichi on 11/20/17.
  */
 
-abstract public class Table {
+abstract public class Table extends Joinable {
 
     /*
 
@@ -72,7 +71,7 @@ abstract public class Table {
     }
 
     /* Intentional package-private visibility */
-    final boolean save(Entry entry, @Nullable ValidationErrorListener listener) {
+    final boolean save(Entry entry, @Nullable AbsValidator.ValidationErrorListener listener) {
         AbsValidator validator = getValidator();
         ContentValues values = entry.packColumnData();
         if (validator != null) {
@@ -93,15 +92,8 @@ abstract public class Table {
         return Storage.api().deleteItem(entry);
     }
 
-    public final Join innerJoin(@NonNull Class<? extends Table> table) {
-        return new Join(this.getName(), Join.Type.INNER_JOIN, Table.newInstanceOf(table).getName());
-    }
-
-    public final Join leftOuterJoin(@NonNull Class<? extends Table> table) {
-        return new Join(this.getName(), Join.Type.LEFT_OUTER_JOIN, Table.newInstanceOf(table).getName());
-    }
-
-    public final Join rightOuterJoin(@NonNull Class<? extends Table> table) {
-        return new Join(this.getName(), Join.Type.RIGHT_OUTER_JOIN, Table.newInstanceOf(table).getName());
+    @Override
+    public String toString() {
+        return getName();
     }
 }

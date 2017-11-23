@@ -3,7 +3,10 @@ package com.pugfish1992.sqliteflow.core;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.pugfish1992.sqliteflow.component.Between;
 import com.pugfish1992.sqliteflow.component.Condition;
+import com.pugfish1992.sqliteflow.component.In;
+import com.pugfish1992.sqliteflow.component.Like;
 
 /**
  * Created by daichi on 11/20/17.
@@ -68,6 +71,18 @@ public class Column {
 
     public Condition greaterThanOrEqualsTo(@Nullable Object value) {
         return new Condition(this.name, Condition.GREATER_THAN_OR_EQUALS, value);
+    }
+
+    public Between between(@NonNull Object min, @NonNull Object max) {
+        return new Between(this, min, max);
+    }
+
+    public In in(@NonNull Object... args) {
+        return new In(this, args);
+    }
+
+    public Like like(@NonNull String pattern) {
+        return new Like(this, pattern);
     }
 
     @Override

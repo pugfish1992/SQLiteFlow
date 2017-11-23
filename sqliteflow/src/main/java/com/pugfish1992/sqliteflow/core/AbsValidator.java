@@ -13,6 +13,10 @@ import java.util.Set;
 
 public abstract class AbsValidator {
 
+    public interface ValidationErrorListener {
+        void onValidationError(int validatorTag, Set<Integer> errors);
+    }
+
     private ContentValues mContentValues = null;
 
     // required public empty constructor

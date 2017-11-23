@@ -2,11 +2,13 @@ package com.pugfish1992.sqliteflow.component;
 
 import android.support.annotation.NonNull;
 
+import com.pugfish1992.sqliteflow.core.Table;
+
 /**
  * Created by daichi on 11/22/17.
  */
 
-public class Join {
+public class Join extends Joinable {
 
     public enum Type {
 
@@ -26,13 +28,13 @@ public class Join {
         }
     }
 
-    @NonNull private final String mLeftTable;
-    @NonNull private final String mRightTable;
+    @NonNull private final Joinable mLeftJoinable;
+    @NonNull private final Table mRightTable;
     @NonNull private final Type mType;
     private Where mJoinCondition;
 
-    public Join(@NonNull String leftTable, @NonNull Type type, @NonNull String rightTable) {
-        mLeftTable = leftTable;
+    public Join(@NonNull Joinable leftJoinable, @NonNull Type type, @NonNull Table rightTable) {
+        mLeftJoinable = leftJoinable;
         mRightTable = rightTable;
         mType = type;
         mJoinCondition = null;
@@ -49,7 +51,11 @@ public class Join {
             throw new IllegalStateException("specify join condition");
         }
 
-        return mLeftTable + " " + mType.toString() + " " + mRightTable
+        String subStatement = (mLeftJoinable instanceof Join)
+                ? String.format("(%s)", mLeftJoinable.toString())
+                : mLeftJoinable.toString();
+
+        return subStatement + " " + mType.toString() + " " + mRightTable.toString()
                 + " ON (" + mJoinCondition.toString() + ")";
     }
 }

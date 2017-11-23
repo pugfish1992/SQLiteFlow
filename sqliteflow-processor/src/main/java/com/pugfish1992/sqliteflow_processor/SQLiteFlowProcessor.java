@@ -19,9 +19,7 @@ import com.pugfish1992.sqliteflow.core.AbsValidator;
 import com.pugfish1992.sqliteflow.core.AffinityType;
 import com.pugfish1992.sqliteflow.core.Entry;
 import com.pugfish1992.sqliteflow.utils.SqliteFormat;
-import com.pugfish1992.sqliteflow.utils.ValidationErrorListener;
 import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
@@ -33,11 +31,9 @@ import com.squareup.javapoet.TypeSpec;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.processing.AbstractProcessor;
@@ -79,7 +75,7 @@ public class SQLiteFlowProcessor extends AbstractProcessor {
     private static final ClassName CLASS_ABS_VALIDATOR = ClassName.get(AbsValidator.class);
     private static final ClassName CLASS_ENTRY = ClassName.get(Entry.class);
     private static final ClassName CLASS_SQLITE_FORMAT = ClassName.get(SqliteFormat.class);
-    private static final ClassName CLASS_VALIDATION_ERROR_LISTENER = ClassName.get(ValidationErrorListener.class);
+    private static final ClassName CLASS_VALIDATION_ERROR_LISTENER = ClassName.get(AbsValidator.ValidationErrorListener.class);
 
     private Filer mFiler;
     private Messager mMessager;

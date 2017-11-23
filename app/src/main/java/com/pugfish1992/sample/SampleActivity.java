@@ -10,13 +10,15 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.pugfish1992.sqliteflow.component.Expressions;
+import com.pugfish1992.sqliteflow.component.Between;
+import com.pugfish1992.sqliteflow.component.In;
 import com.pugfish1992.sqliteflow.component.Join;
+import com.pugfish1992.sqliteflow.component.Like;
+import com.pugfish1992.sqliteflow.core.AbsValidator;
 import com.pugfish1992.sqliteflow.core.FamilyTable;
 import com.pugfish1992.sqliteflow.core.Select;
 import com.pugfish1992.sqliteflow.core.User;
 import com.pugfish1992.sqliteflow.core.UserTable;
-import com.pugfish1992.sqliteflow.utils.ValidationErrorListener;
 
 import java.util.List;
 import java.util.Set;
@@ -43,7 +45,7 @@ public class SampleActivity extends AppCompatActivity {
         user.name = "oraoraora";
         user.age = 3;
         user.hasBrothers = false;
-        user.save(new ValidationErrorListener() {
+        user.save(new AbsValidator.ValidationErrorListener() {
             @Override
             public void onValidationError(int validatorTag, Set<Integer> errors) {
                 Log.d("mylog", "errors from -> " + String.valueOf(validatorTag));
@@ -61,7 +63,7 @@ public class SampleActivity extends AppCompatActivity {
         user.name = null;
         user.age = 18;
         user.hasBrothers = false;
-        user.save(new ValidationErrorListener() {
+        user.save(new AbsValidator.ValidationErrorListener() {
             @Override
             public void onValidationError(int validatorTag, Set<Integer> errors) {
                 Log.d("mylog", "errors from -> " + String.valueOf(validatorTag));
@@ -79,7 +81,7 @@ public class SampleActivity extends AppCompatActivity {
         user.name = "wryyyyyyyyyyyy";
         user.age = 120;
         user.hasBrothers = true;
-        user.save(new ValidationErrorListener() {
+        user.save(new AbsValidator.ValidationErrorListener() {
             @Override
             public void onValidationError(int validatorTag, Set<Integer> errors) {
                 Log.d("mylog", "errors from -> " + String.valueOf(validatorTag));
@@ -103,8 +105,17 @@ public class SampleActivity extends AppCompatActivity {
             Log.d("mylog", "selected -> " + u.name + " hasBrothers=" + String.valueOf(u.hasBrothers));
         }
 
-        Join join = new UserTable().innerJoin(FamilyTable.class).on(UserTable.id.equalsTo(FamilyTable.id));
+        Join join = new UserTable().innerJoin(new FamilyTable()).on(UserTable.id.equalsTo(FamilyTable.id));
         Log.d("mylog", "join -> " + join.toString());
+
+        Between between = UserTable.age.between(10, 29);
+        Log.d("mylog", "between -> " + between.toString());
+
+        In in = UserTable.id.in("abc", "def", "#");
+        Log.d("mylog", "in -> " + in.toString());
+
+        Like like = UserTable.name.like("a_b");
+        Log.d("mylog", "like -> " + like.toString());
     }
 
     @Override

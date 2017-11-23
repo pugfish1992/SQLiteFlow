@@ -3,6 +3,7 @@ package com.pugfish1992.sqliteflow.core;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.pugfish1992.sqliteflow.component.Joinable;
 import com.pugfish1992.sqliteflow.component.Where;
 
 import java.util.List;
@@ -15,7 +16,7 @@ public class Select<T extends Entry> {
 
     @NonNull private Class<T> mTarget;
     private boolean mDistinct;
-    @Nullable private String mTable;
+    @Nullable private Joinable mFrom;
     @Nullable private Where mWhere;
 
     public static <T extends Entry> Select<T> target(@NonNull Class<T> target) {
@@ -26,7 +27,7 @@ public class Select<T extends Entry> {
     private Select(@NonNull Class<T> target) {
         mTarget = target;
         mDistinct = false;
-        mTable = null;
+        mFrom = null;
         mWhere = null;
     }
 
@@ -35,8 +36,13 @@ public class Select<T extends Entry> {
         return this;
     }
 
-    public Select<T> from(@NonNull Class<? extends Table> table) {
-        mTable = Table.newInstanceOf(table).getName();
+    public Select<T> from(@NonNull Joinable from) {
+        mFrom = from;
+        return this;
+    }
+
+    public Select<T> from(@NonNull Class<? extends Table> from) {
+        mFrom = Table.newInstanceOf(from);
         return this;
     }
 
@@ -47,13 +53,13 @@ public class Select<T extends Entry> {
 
     @NonNull
     public List<T> start() {
-        if (mTable == null) {
+        if (mFrom == null) {
             throw new IllegalStateException("specify a target table");
         }
         return Storage.api().selectItems(
                 mTarget,
                 mDistinct,
-                mTable,
+                mFrom.toString(),
                 mWhere != null ? mWhere.toString() : null,
                 null,
                 null,
