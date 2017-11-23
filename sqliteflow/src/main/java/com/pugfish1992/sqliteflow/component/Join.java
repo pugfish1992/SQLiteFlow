@@ -10,7 +10,9 @@ public class Join {
 
     public enum Type {
 
-        INNER_JOIN("INNER JOIN");
+        INNER_JOIN("INNER JOIN"),
+        LEFT_OUTER_JOIN("LEFT OUTER JOIN"),
+        RIGHT_OUTER_JOIN("RIGHT OUTER JOIN");
 
         private final String mStatement;
 

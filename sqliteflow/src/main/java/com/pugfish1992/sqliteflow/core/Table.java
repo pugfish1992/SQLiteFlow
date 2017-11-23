@@ -4,6 +4,9 @@ import android.content.ContentValues;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.pugfish1992.sqliteflow.component.Join;
+import com.pugfish1992.sqliteflow.utils.ValidationErrorListener;
+
 import java.util.Set;
 
 /**
@@ -65,11 +68,21 @@ abstract public class Table {
     /* Intentional package-private visibility */
     // Return true if saving is successful, false otherwise
     final boolean save(Entry entry) {
+        return save(entry, null);
+    }
+
+    /* Intentional package-private visibility */
+    final boolean save(Entry entry, @Nullable ValidationErrorListener listener) {
         AbsValidator validator = getValidator();
         ContentValues values = entry.packColumnData();
         if (validator != null) {
-            Set<Integer> errors = validator.onValidate(values);
-            if (errors != null && errors.size() != 0) return false;
+            validator.setTarget(entry);
+            Set<Integer> errors = validator.onValidate();
+            values = validator.getValidatedValues();
+            if (errors != null && errors.size() != 0) {
+                if (listener != null) listener.onValidationError(validator.getTag(), errors);
+                return false;
+            }
         }
         return Storage.api().saveItem(entry, values);
     }
@@ -78,5 +91,17 @@ abstract public class Table {
     // Return true if deleting is successful, false otherwise
     final boolean delete(Entry entry) {
         return Storage.api().deleteItem(entry);
+    }
+
+    public final Join innerJoin(@NonNull Class<? extends Table> table) {
+        return new Join(this.getName(), Join.Type.INNER_JOIN, Table.newInstanceOf(table).getName());
+    }
+
+    public final Join leftOuterJoin(@NonNull Class<? extends Table> table) {
+        return new Join(this.getName(), Join.Type.LEFT_OUTER_JOIN, Table.newInstanceOf(table).getName());
+    }
+
+    public final Join rightOuterJoin(@NonNull Class<? extends Table> table) {
+        return new Join(this.getName(), Join.Type.RIGHT_OUTER_JOIN, Table.newInstanceOf(table).getName());
     }
 }

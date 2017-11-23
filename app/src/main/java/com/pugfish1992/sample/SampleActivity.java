@@ -16,8 +16,10 @@ import com.pugfish1992.sqliteflow.core.FamilyTable;
 import com.pugfish1992.sqliteflow.core.Select;
 import com.pugfish1992.sqliteflow.core.User;
 import com.pugfish1992.sqliteflow.core.UserTable;
+import com.pugfish1992.sqliteflow.utils.ValidationErrorListener;
 
 import java.util.List;
+import java.util.Set;
 
 public class SampleActivity extends AppCompatActivity {
 
@@ -39,27 +41,57 @@ public class SampleActivity extends AppCompatActivity {
 
         User user = new User();
         user.name = "oraoraora";
-        user.age = 32;
+        user.age = 3;
         user.hasBrothers = false;
-        if (!user.save()) {
-            Log.d("mylog", "failed to save...");
-        }
+        user.save(new ValidationErrorListener() {
+            @Override
+            public void onValidationError(int validatorTag, Set<Integer> errors) {
+                Log.d("mylog", "errors from -> " + String.valueOf(validatorTag));
+                for (int error : errors) {
+                    if (error == UserTableContract.UserValidator.NAME_IS_EMPTY) {
+                        Log.d("mylog", "error:name_is_empty");
+                    } else if (error == UserTableContract.UserValidator.AGE_IS_LESS_THAN_10) {
+                        Log.d("mylog", "error:age_is_less_than_10");
+                    }
+                }
+            }
+        });
 
         user = new User();
-        user.name = "dorararara";
+        user.name = null;
         user.age = 18;
         user.hasBrothers = false;
-        if (!user.save()) {
-            Log.d("mylog", "failed to save...");
-        }
+        user.save(new ValidationErrorListener() {
+            @Override
+            public void onValidationError(int validatorTag, Set<Integer> errors) {
+                Log.d("mylog", "errors from -> " + String.valueOf(validatorTag));
+                for (int error : errors) {
+                    if (error == UserTableContract.UserValidator.NAME_IS_EMPTY) {
+                        Log.d("mylog", "error:name_is_empty");
+                    } else if (error == UserTableContract.UserValidator.AGE_IS_LESS_THAN_10) {
+                        Log.d("mylog", "error:age_is_less_than_10");
+                    }
+                }
+            }
+        });
 
         user = new User();
         user.name = "wryyyyyyyyyyyy";
         user.age = 120;
         user.hasBrothers = true;
-        if (!user.save()) {
-            Log.d("mylog", "failed to save...");
-        }
+        user.save(new ValidationErrorListener() {
+            @Override
+            public void onValidationError(int validatorTag, Set<Integer> errors) {
+                Log.d("mylog", "errors from -> " + String.valueOf(validatorTag));
+                for (int error : errors) {
+                    if (error == UserTableContract.UserValidator.NAME_IS_EMPTY) {
+                        Log.d("mylog", "error:name_is_empty");
+                    } else if (error == UserTableContract.UserValidator.AGE_IS_LESS_THAN_10) {
+                        Log.d("mylog", "error:age_is_less_than_10");
+                    }
+                }
+            }
+        });
 
         List<User> users = Select
                 .target(User.class)
@@ -71,7 +103,7 @@ public class SampleActivity extends AppCompatActivity {
             Log.d("mylog", "selected -> " + u.name + " hasBrothers=" + String.valueOf(u.hasBrothers));
         }
 
-        Join join = new Join("left", Join.Type.INNER_JOIN, "right").on(UserTable.id.equalsTo(FamilyTable.id));
+        Join join = new UserTable().innerJoin(FamilyTable.class).on(UserTable.id.equalsTo(FamilyTable.id));
         Log.d("mylog", "join -> " + join.toString());
     }
 

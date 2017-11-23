@@ -3,6 +3,8 @@ package com.pugfish1992.sqliteflow.core;
 import android.content.ContentValues;
 import android.support.annotation.NonNull;
 
+import com.pugfish1992.sqliteflow.utils.ValidationErrorListener;
+
 /**
  * Created by daichi on 11/22/17.
  */
@@ -39,6 +41,7 @@ abstract public class Entry {
 
     // Return true if saving is successful, false otherwise
     abstract public boolean save();
+    abstract public boolean save(ValidationErrorListener listener);
 
     // Return true if deleting is successful, false otherwise
     abstract public boolean delete();

@@ -19,6 +19,7 @@ import com.pugfish1992.sqliteflow.core.AbsValidator;
 import com.pugfish1992.sqliteflow.core.AffinityType;
 import com.pugfish1992.sqliteflow.core.Entry;
 import com.pugfish1992.sqliteflow.utils.SqliteFormat;
+import com.pugfish1992.sqliteflow.utils.ValidationErrorListener;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.FieldSpec;
@@ -52,6 +53,16 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.MirroredTypeException;
 import javax.tools.Diagnostic;
 
+import static com.pugfish1992.sqliteflow_processor.SupportedTypeUtils.isBooleanType;
+import static com.pugfish1992.sqliteflow_processor.SupportedTypeUtils.isDoubleType;
+import static com.pugfish1992.sqliteflow_processor.SupportedTypeUtils.isFloatType;
+import static com.pugfish1992.sqliteflow_processor.SupportedTypeUtils.isIntType;
+import static com.pugfish1992.sqliteflow_processor.SupportedTypeUtils.isLongType;
+import static com.pugfish1992.sqliteflow_processor.SupportedTypeUtils.isShortType;
+import static com.pugfish1992.sqliteflow_processor.SupportedTypeUtils.isStringType;
+import static com.pugfish1992.sqliteflow_processor.SupportedTypeUtils.isSupportedJavaType;
+import static com.pugfish1992.sqliteflow_processor.SupportedTypeUtils.toAffinityTypeFromSupportedJavaType;
+
 public class SQLiteFlowProcessor extends AbstractProcessor {
 
     private static final String PACKAGE_NAME_TO_GENERATE = com.pugfish1992.sqliteflow.core.Table.class.getPackage().getName();
@@ -68,6 +79,7 @@ public class SQLiteFlowProcessor extends AbstractProcessor {
     private static final ClassName CLASS_ABS_VALIDATOR = ClassName.get(AbsValidator.class);
     private static final ClassName CLASS_ENTRY = ClassName.get(Entry.class);
     private static final ClassName CLASS_SQLITE_FORMAT = ClassName.get(SqliteFormat.class);
+    private static final ClassName CLASS_VALIDATION_ERROR_LISTENER = ClassName.get(ValidationErrorListener.class);
 
     private Filer mFiler;
     private Messager mMessager;
@@ -464,6 +476,15 @@ public class SQLiteFlowProcessor extends AbstractProcessor {
         .addStatement("return $L.save(this)", varName_PARENT_TABLE)
         .build());
 
+        // override method; save(ValidationErrorListener)
+        entryClassSpec.addMethod(MethodSpec
+                .methodBuilder("save")
+                .addModifiers(Modifier.PUBLIC)
+                .addParameter(CLASS_VALIDATION_ERROR_LISTENER, "l")
+                .returns(TypeName.BOOLEAN)
+                .addStatement("return $L.save(this, l)", varName_PARENT_TABLE)
+                .build());
+
         // override method; delete()
         entryClassSpec.addMethod(MethodSpec
         .methodBuilder("delete")
@@ -477,6 +498,11 @@ public class SQLiteFlowProcessor extends AbstractProcessor {
                 .constructorBuilder()
                 .addModifiers(Modifier.PUBLIC)
                 .build());
+
+        // override method; equals()
+        entryClassSpec.addMethod(MethodSpecUtils.equalsMethod(entryClass, annotatedColumnFields));
+        // override method; hashCode()
+        entryClassSpec.addMethod(MethodSpecUtils.hashCodeMethod(annotatedColumnFields));
 
         JavaFile.builder(packageName, entryClassSpec.build()).build().writeTo(mFiler);
     }
@@ -516,63 +542,6 @@ public class SQLiteFlowProcessor extends AbstractProcessor {
 
     private void error(String msg, Object... args) {
         mMessager.printMessage(Diagnostic.Kind.ERROR, String.format(msg, args));
-    }
-
-    private boolean isSupportedJavaType(TypeName typeName) {
-        return isBooleanType(typeName) ||
-                isShortType(typeName) ||
-                isIntType(typeName) ||
-                isLongType(typeName) ||
-                isFloatType(typeName) ||
-                isDoubleType(typeName) ||
-                isStringType(typeName);
-    }
-
-    private AffinityType toAffinityTypeFromSupportedJavaType(TypeName typeName) {
-        if (isShortType(typeName) ||
-                isIntType(typeName)||
-                isLongType(typeName) ||
-                isBooleanType(typeName)) {
-            return AffinityType.INTEGER;
-
-        } else if (isFloatType(typeName) ||
-                isDoubleType(typeName)) {
-            return AffinityType.REAL;
-
-        } else if (typeName.equals(CLASS_STRING)) {
-            return AffinityType.TEXT;
-
-        } else {
-            return AffinityType.BLOB;
-        }
-    }
-
-    private boolean isBooleanType(TypeName typeName) {
-        return TypeName.BOOLEAN.equals(typeName);
-    }
-
-    private boolean isShortType(TypeName typeName) {
-        return TypeName.SHORT.equals(typeName);
-    }
-
-    private boolean isIntType(TypeName typeName) {
-        return TypeName.INT.equals(typeName);
-    }
-
-    private boolean isLongType(TypeName typeName) {
-        return TypeName.LONG.equals(typeName);
-    }
-
-    private boolean isStringType(TypeName typeName) {
-        return CLASS_STRING.equals(typeName);
-    }
-
-    private boolean isFloatType(TypeName typeName) {
-        return TypeName.FLOAT.equals(typeName);
-    }
-
-    private boolean isDoubleType(TypeName typeName) {
-        return TypeName.DOUBLE.equals(typeName);
     }
 
     private String joinTokens(CharSequence delimiter, Iterable tokens) {
