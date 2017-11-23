@@ -2,6 +2,7 @@ package com.pugfish1992.sample;
 
 import android.app.Application;
 
+import com.pugfish1992.sample.data.DbOpenHelper;
 import com.pugfish1992.sqliteflow.core.SQLiteFlow;
 
 /**
@@ -12,6 +13,6 @@ public class MyApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        SQLiteFlow.init(new OpenHelper(this));
+        SQLiteFlow.init(new DbOpenHelper(this));
     }
 }

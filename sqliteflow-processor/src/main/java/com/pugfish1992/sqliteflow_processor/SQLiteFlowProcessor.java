@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.pugfish1992.sqliteflow.annotation.ClassNames;
 import com.pugfish1992.sqliteflow.annotation.Column;
 import com.pugfish1992.sqliteflow.annotation.DefaultBool;
 import com.pugfish1992.sqliteflow.annotation.DefaultDouble;
@@ -118,9 +119,9 @@ public class SQLiteFlowProcessor extends AbstractProcessor {
             }
 
             Table tableAnno = typeElement.getAnnotation(Table.class);
-            final String tableName = tableAnno.value();
-            final String entryClassName = toPascalCase(tableName);
-            final String tableClassName = entryClassName + SUFFIX_OF_TABLE_CLASS_NAME;
+            String tableName = tableAnno.value();
+            String entryClassName = toPascalCase(tableName);
+            String tableClassName = entryClassName + SUFFIX_OF_TABLE_CLASS_NAME;
 
             if (tableName.length() == 0) {
                 error(typeElement, "specified table name is " + "invalid because it is empty");
@@ -129,6 +130,22 @@ public class SQLiteFlowProcessor extends AbstractProcessor {
             if (entryClassName.length() == 0) {
                 error(typeElement, "can't generate the name of a entry class from the specified table name '%s'", tableName);
                 continue;
+            }
+
+            ClassNames classNamesAnno = typeElement.getAnnotation(ClassNames.class);
+            if (classNamesAnno != null) {
+
+                if (classNamesAnno.entryClass().length() == 0) {
+                    error(typeElement, "the name of a entry class can't be empty");
+                    continue;
+                }
+                entryClassName = classNamesAnno.entryClass();
+
+                if (classNamesAnno.tableClass().length() == 0) {
+                    error(typeElement, "the name of a table class can't be empty");
+                    continue;
+                }
+                tableClassName = classNamesAnno.tableClass();
             }
 
             // See -> https://qiita.com/izumin5210/items/6675c68ae4229e9697bf
